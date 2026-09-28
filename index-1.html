@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ящик предложений колледжа</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF3E6; --paper2:#F5E6CC; --ink:#2B2416; --ink-soft:#75674f;
+  --box:#1F6B4C; --box-dark:#154A34; --accent:#DD8A2E; --green:#1F6B4C; --gold:#B8901F;
+  --line:#DD8A2E; --radius:14px;
+  --banner1:#2B1F14; --banner2:#4A2E17;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#1B1912; --paper2:#242018; --ink:#F1E8D6; --ink-soft:#a89e8e; --box:#2E8763; --box-dark:#154A34; }
+}
+:root[data-theme="dark"]{ --paper:#1B1912; --paper2:#242018; --ink:#F1E8D6; --ink-soft:#a89e8e; --box:#2E8763; --box-dark:#154A34; }
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+*{box-sizing:border-box;}
+body{margin:0; height:100%; background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; overflow:hidden;}
+.app{display:flex; flex-direction:column; height:100%;}
+
+/* ---------- Login ---------- */
+.gate{position:fixed; inset:0; background:var(--paper); display:flex; align-items:center; justify-content:center; z-index:50; padding:24px;}
+.gate-card{width:100%; max-width:360px; background:var(--paper2); border:1px solid rgba(0,0,0,.08); border-radius:var(--radius); padding:28px 26px;}
+.gate-card h1{font-family:'Fraunces',serif; font-weight:600; font-size:26px; margin:0 0 6px;}
+.gate-card p{margin:0 0 22px; color:var(--ink-soft); font-size:14px; line-height:1.5;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12px; color:var(--ink-soft); margin-bottom:5px;}
+.field input{width:100%; padding:11px 12px; border-radius:9px; border:1px solid rgba(0,0,0,.15); background:var(--paper); color:var(--ink); font:14px 'Inter',sans-serif;}
+.field input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+.gate-btn{width:100%; margin-top:8px; padding:12px; border:none; border-radius:9px; background:var(--accent); color:#fff; font:600 15px 'Inter',sans-serif; cursor:pointer;}
+.gate-btn:active{transform:translateY(1px);}
+.gate-err{color:var(--accent); font-size:12.5px; margin-top:10px; min-height:16px;}
+
+/* ---------- College banner ---------- */
+.banner{flex:none; position:relative; background:linear-gradient(135deg,var(--banner1),var(--banner2)); padding:16px 20px; display:flex; align-items:center; gap:16px; overflow:hidden;}
+.banner .mark{flex:none; width:52px; height:52px;}
+.banner .name{font-family:'Fraunces',serif; font-style:italic; font-weight:600; font-size:17px; line-height:1.22; color:#8FE3C4; position:relative; z-index:1;}
+.banner .cap{flex:none; width:46px; height:46px; opacity:.9; margin-left:auto; position:relative; z-index:1;}
+.banner-strip{flex:none; background:var(--banner2); display:flex; align-items:center; justify-content:space-between; padding:8px 20px 10px;}
+.banner-strip .burger span{display:block; width:22px; height:2px; background:#e7dcc4; margin:4px 0; border-radius:2px;}
+.lang{display:flex; gap:8px;}
+.lang button{border:1px solid rgba(255,255,255,.35); background:transparent; color:#e7dcc4; font:600 12px 'Inter',sans-serif; padding:5px 12px; border-radius:6px; cursor:pointer;}
+.lang button.active{background:var(--accent); border-color:var(--accent); color:#20160a;}
+
+/* ---------- Header ---------- */
+header{flex:none; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(0,0,0,.08);}
+header h2{font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0;}
+.who{display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-soft);}
+.who b{color:var(--ink); font-weight:600;}
+.logout{border:none; background:none; color:var(--ink-soft); font-size:12.5px; cursor:pointer; text-decoration:underline;}
+
+/* ---------- Main split ---------- */
+main{flex:1; display:flex; min-height:0;}
+.pane-left{flex:1.1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; position:relative; gap:18px;}
+.divider{width:2px; align-self:stretch; background:var(--line); opacity:.55; flex:none;}
+.pane-right{flex:1; display:flex; flex-direction:column; padding:18px 20px; min-width:0;}
+.pane-right h3{font-family:'Fraunces',serif; font-weight:600; font-size:16px; margin:0 0 4px;}
+.pane-right .sub{color:var(--ink-soft); font-size:12.5px; margin:0 0 14px;}
+.feed{flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-right:4px;}
+.wish-card{background:var(--paper2); border-left:3px solid var(--accent); border-radius:8px; padding:10px 12px;}
+.wish-card .txt{font-family:'Fraunces',serif; font-style:italic; font-size:14.5px; line-height:1.4; margin:0 0 6px;}
+.wish-card .meta{font-size:11.5px; color:var(--ink-soft);}
+.wish-card{position:relative;}
+.del{position:absolute; top:6px; right:8px; border:none; background:none; color:var(--ink-soft); font-size:16px; cursor:pointer; line-height:1;}
+.clear-all{display:none; width:100%; margin-top:14px; padding:10px; border:1px solid var(--accent); background:none; color:var(--accent); border-radius:8px; font:600 13px 'Inter',sans-serif; cursor:pointer;}
+.empty{color:var(--ink-soft); font-size:13px; padding:20px 0; text-align:center;}
+
+/* ---------- Box scene ---------- */
+.scene{width:min(240px,60vw); position:relative;}
+.scene svg{width:100%; height:auto; display:block;}
+.compose{width:min(320px,90%); display:flex; flex-direction:column; gap:10px;}
+.compose textarea{width:100%; resize:none; height:74px; padding:11px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.15); background:var(--paper2); color:var(--ink); font:14.5px/1.4 'Fraunces',serif; font-style:italic;}
+.compose textarea:focus{outline:2px solid var(--accent); outline-offset:1px;}
+.drop-btn{border:none; padding:11px; border-radius:9px; background:var(--box); color:#fff; font:600 14px 'Inter',sans-serif; cursor:pointer;}
+.drop-btn:disabled{opacity:.5; cursor:default;}
+.hint{font-size:12px; color:var(--ink-soft); text-align:center;}
+.limit-msg{display:none; font-size:13.5px; color:var(--ink-soft); text-align:center; background:var(--paper2); border-radius:10px; padding:14px; width:min(320px,90%);}
+
+.flying{position:fixed; z-index:40; font:italic 13.5px/1.3 'Fraunces',serif; background:var(--paper2); border-left:3px solid var(--accent); border-radius:6px; padding:8px 10px; max-width:220px; box-shadow:0 6px 18px rgba(0,0,0,.18); transition:transform .75s cubic-bezier(.5,-0.2,.6,1.1), opacity .75s ease .3s;}
+
+/* ---------- Side menu ---------- */
+.backdrop{position:fixed; inset:0; background:rgba(20,14,6,.45); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:60;}
+.backdrop.open{opacity:1; pointer-events:auto;}
+.side-menu{position:fixed; top:0; left:0; bottom:0; width:min(280px,80vw); background:var(--paper); z-index:61; transform:translateX(-100%); transition:transform .25s ease; padding:20px 18px; padding-top:calc(20px + env(safe-area-inset-top,0px)); overflow-y:auto;}
+.side-menu.open{transform:translateX(0);}
+.side-menu h4{font-family:'Fraunces',serif; font-size:17px; margin:0 0 14px;}
+.side-menu .item{border-bottom:1px solid rgba(0,0,0,.08); padding:12px 0;}
+.side-menu .item b{display:block; font-size:13.5px; margin-bottom:3px; color:var(--green);}
+.side-menu .item p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+.side-menu .close{border:none; background:none; float:right; font-size:20px; color:var(--ink-soft); cursor:pointer; line-height:1;}
+
+@media (max-width:640px){
+  main{flex-direction:column;}
+  .divider{width:auto; height:2px;}
+  .pane-right{border-top:none;}
+}
+@media (max-width:420px){
+  .banner{padding:12px 14px; gap:10px;}
+  .banner .mark{width:40px; height:40px;}
+  .banner .name{font-size:14px;}
+  .banner .cap{width:34px; height:34px;}
+  .banner-strip{padding:6px 14px 8px;}
+}
+.link{border:none; background:none; color:var(--ink-soft); text-decoration:underline; font-size:12.5px; cursor:pointer; margin-top:12px; padding:0;}
+.sub-err{color:var(--accent); font-size:12.5px; text-align:center; min-height:0;}
+.link.skip{display:block; margin:14px auto 0;}
+.demo-banner{flex:none; background:var(--accent); color:#20160a; font-size:12px; text-align:center; padding:5px 10px;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <h1 data-i="title">Ящик предложений</h1>
+      <div id="step1">
+        <p data-i="gateP">Укажите</p>
+        <div class="field"><label data-i="first">Имя</label><input id="inFirst" autocomplete="given-name"></div>
+        <div class="field"><label data-i="last">Фамилия</label><input id="inLast" autocomplete="family-name"></div>
+        <div class="field"><label data-i="email">Почта</label><input id="inEmail" autocomplete="email" type="email" placeholder="name@example.com"></div>
+        <button class="gate-btn" id="loginBtn" data-i="sendCode">Получить ссылку</button>
+        <!-- TEST-SKIP: удалить для запуска -->
+        <button class="link skip" id="skipBtn" data-i="skip">Пропустить (тестовый режим)</button>
+        <!-- /TEST-SKIP -->
+      </div>
+      <div id="step2" style="display:none">
+        <p><span data-i="codeSent">Мы отправили ссылку для входа на </span><b id="sentTo"></b></p>
+        <p data-i="checkMail">Откройте письмо, нажмите «Sign in» и вернитесь на сайт.</p>
+        <button class="link" id="backBtn" data-i="back">Назад</button>
+      </div>
+      <div class="gate-err" id="gateErr"></div>
+    </div>
+  </div>
+
+  <div class="banner">
+    <svg class="mark" viewBox="0 0 100 100">
+      <polygon points="30,6 70,6 94,30 94,70 70,94 30,94 6,70 6,30" fill="none" stroke="#2B2416" stroke-width="5"/>
+      <polygon points="30,6 70,6 94,30 94,70 70,94 30,94 6,70 6,30" fill="none" stroke="var(--green)" stroke-width="5" stroke-dasharray="150 300"/>
+      <polygon points="30,6 70,6 94,30 94,70 70,94 30,94 6,70 6,30" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="150 300" stroke-dashoffset="-150"/>
+      <text x="50" y="56" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="17" fill="#2B2416">IT&amp;BS</text>
+    </svg>
+    <div class="name" data-i="college" data-h>Карагандинский колледж<br>IT &amp; Business</div>
+    <svg class="cap" viewBox="0 0 100 100">
+      <polygon points="50,18 92,38 50,58 8,38" fill="#2B2416"/>
+      <path d="M20 44 V64 C20 72, 80 72, 80 64 V44" fill="none" stroke="#2B2416" stroke-width="4"/>
+      <circle cx="88" cy="42" r="3" fill="var(--accent)"/>
+      <line x1="88" y1="42" x2="88" y2="60" stroke="var(--accent)" stroke-width="2"/>
+    </svg>
+  </div>
+  <div class="banner-strip">
+    <div class="burger" id="menuBtn"><span></span><span></span><span></span></div>
+    <div class="lang"><button data-lang="ru" class="active">RU</button><button data-lang="kz">KZ</button></div>
+  </div>
+
+  <header>
+    <h2 data-i="title">Ящик предложений</h2>
+    <div class="who"><span><span data-i="who">Вы вошли как</span> <b id="whoName">—</b></span><button class="logout" id="logoutBtn" data-i="logout">выйти</button></div>
+  </header>
+
+  <div class="demo-banner" id="demoBanner" style="display:none" data-i="demo">Тестовый режим: предложения не сохраняются в базе</div>
+
+  <main>
+    <section class="pane-left">
+      <div class="scene">
+        <svg viewBox="0 0 240 220" fill="none">
+          <rect x="26" y="96" width="188" height="104" rx="10" fill="var(--box)"/>
+          <rect x="26" y="96" width="188" height="104" rx="10" fill="none" stroke="var(--box-dark)" stroke-width="3"/>
+          <path d="M14 78 L120 52 L226 78 L214 104 L26 104 Z" fill="var(--accent)" stroke="var(--box-dark)" stroke-width="3" stroke-linejoin="round"/>
+          <rect x="103" y="70" width="34" height="10" rx="3" fill="var(--box-dark)"/>
+          <rect x="110" y="54" width="20" height="130" fill="none" stroke="var(--box-dark)" stroke-width="4" opacity=".35"/>
+        </svg>
+      </div>
+      <form class="compose" id="composeForm">
+        <textarea id="wishText" maxlength="220" data-ip="ph" placeholder="Что стоит улучшить в колледже?"></textarea>
+        <button type="submit" class="drop-btn" id="dropBtn" data-i="send">Отправить предложение</button>
+      </form>
+      <p class="hint" id="hintMsg" data-i="hint">Ваше имя и фамилия будут видны рядом с предложением</p>
+      <p class="sub-err" id="subErr"></p>
+      <div class="limit-msg" id="limitMsg" data-i="limit" data-h>Вы уже отправили предложение сегодня 🌙<br>Возвращайтесь завтра — одно предложение в день на человека</div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="pane-right">
+      <h3 data-i="feedT">Предложения студентов</h3>
+      <p class="sub" data-i="feedS">Живая лента идей по улучшению колледжа</p>
+      <div class="feed" id="feed"><div class="empty">Пока здесь пусто — станьте первым</div></div>
+    </section>
+  </main>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<nav class="side-menu" id="sideMenu">
+  <button class="close" id="menuClose">×</button>
+  <h4 data-i="menu">Меню</h4>
+  <div class="item"><b data-i="m1t">Как это работает</b><p data-i="m1p">Впишите имя, фамилию и почту, опишите идею — она улетит в ящик и появится в общей ленте справа под вашим именем.</p></div>
+  <div class="item"><b data-i="m2t">Правила площадки</b><p data-i="m2p">Предложения не анонимные. Без оскорблений, спама и личных данных других людей. Одно предложение в день на человека.</p></div>
+  <div class="item"><b data-i="m3t">Написать модератору</b><p><a href="mailto:wishbox@college.kz">wishbox@college.kz</a></p></div>
+  <div class="item"><b data-i="m4t">О колледже</b><p data-i="college2">Карагандинский колледж IT &amp; Business</p></div>
+  <button class="clear-all" id="clearAll" data-i="clear">Очистить все предложения</button>
+</nav>
+
+<script>
+const SUPABASE_URL = 'https://wufokwtubjjeicwlwdom.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_o7DFkDxV3cEvTZ5wK8Rzjw_Rj4ktaWo';
+const MODERATOR_EMAIL = 'ПОЧТА_МОДЕРАТОРА'; // та же, что в SQL (только для показа кнопок; защита — в базе)
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let demo = false, demoDocs = [];
+let me = null, profile = null, isMod = false, lastDocs = [], usedToday = false, pollId = null;
+const $ = id => document.getElementById(id);
+function esc(x){ const d=document.createElement('div'); d.textContent=x; return d.innerHTML; }
+function almatyToday(){ return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Almaty'}); }
+
+// ---- i18n ----
+const I18N = {
+  ru:{ptitle:'Ящик предложений колледжа',title:'Ящик предложений',gateP:'Укажите имя, фамилию и почту — мы отправим ссылку для входа. Предложения не анонимные: имя и фамилия будут видны рядом с идеей.',first:'Имя',last:'Фамилия',email:'Почта',sendCode:'Получить ссылку',codeSent:'Мы отправили ссылку для входа на ',checkMail:'Откройте письмо, нажмите «Sign in» и вернитесь на сайт. Письмо может попасть в «Спам».',skip:'Пропустить (тестовый режим)',demo:'Тестовый режим: предложения не сохраняются в базе',codeLbl:'Код из письма',verify:'Подтвердить',back:'Назад',err:'Заполните имя, фамилию и корректную почту',errSend:'Не удалось отправить код. Попробуйте позже',errCode:'Неверный код или срок истёк',errSave:'Не удалось сохранить. Попробуйте ещё раз',college:'Карагандинский колледж<br>IT & Business',college2:'Карагандинский колледж IT & Business',who:'Вы вошли как',logout:'выйти',ph:'Что стоит улучшить в колледже?',send:'Отправить предложение',hint:'Ваше имя и фамилия будут видны рядом с предложением',limit:'Вы уже отправили предложение сегодня 🌙<br>Возвращайтесь завтра — одно предложение в день на человека',feedT:'Предложения студентов',feedS:'Живая лента идей по улучшению колледжа',empty:'Пока здесь пусто — станьте первым',menu:'Меню',m1t:'Как это работает',m1p:'Впишите имя, фамилию и почту, подтвердите код из письма, опишите идею — она улетит в ящик и появится в общей ленте справа под вашим именем.',m2t:'Правила площадки',m2p:'Предложения не анонимные. Без оскорблений, спама и личных данных других людей. Одно предложение в день на человека.',m3t:'Написать модератору',m4t:'О колледже',clear:'Очистить все предложения',confirm:'Удалить все предложения? Это нельзя отменить.',del:'Удалить'},
+  kz:{ptitle:'Колледждің ұсыныстар жәшігі',title:'Ұсыныстар жәшігі',gateP:'Атыңызды, тегіңізді және поштаңызды көрсетіңіз — кіру сілтемесін жібереміз. Ұсыныстар анонимді емес: аты-жөніңіз идеяның жанында көрінеді.',first:'Аты',last:'Тегі',email:'Пошта',sendCode:'Сілтеме алу',codeSent:'Кіру сілтемесін мына поштаға жібердік: ',checkMail:'Хатты ашып, «Sign in» батырмасын басыңыз да, сайтқа оралыңыз. Хат «Спамға» түсуі мүмкін.',skip:'Өткізіп жіберу (сынақ режимі)',demo:'Сынақ режимі: ұсыныстар базаға сақталмайды',codeLbl:'Хаттағы код',verify:'Растау',back:'Артқа',err:'Аты-жөніңізді және дұрыс поштаны толтырыңыз',errSend:'Кодты жіберу мүмкін болмады. Кейінірек қайталаңыз',errCode:'Код қате немесе мерзімі өтті',errSave:'Сақтау мүмкін болмады. Қайталап көріңіз',college:'Қарағанды колледжі<br>IT & Business',college2:'Қарағанды колледжі IT & Business',who:'Сіз кірдіңіз:',logout:'шығу',ph:'Колледжде нені жақсартқан жөн?',send:'Ұсыныс жіберу',hint:'Аты-жөніңіз ұсыныстың жанында көрінеді',limit:'Бүгін ұсыныс жібердіңіз 🌙<br>Ертең оралыңыз — күніне бір адамға бір ұсыныс',feedT:'Студенттердің ұсыныстары',feedS:'Колледжді жақсарту бойынша идеялардың тірі лентасы',empty:'Әзірге бос — бірінші болыңыз',menu:'Мәзір',m1t:'Бұл қалай жұмыс істейді',m1p:'Атыңызды, тегіңізді және поштаңызды жазыңыз, хаттағы кодты растаңыз, идеяңызды сипаттаңыз — ол жәшікке ұшып түсіп, оң жақтағы ортақ лентада аты-жөніңізбен көрінеді.',m2t:'Алаң ережелері',m2p:'Ұсыныстар анонимді емес. Балағат сөз, спам және басқа адамдардың жеке деректерінсіз. Күніне бір адамға бір ұсыныс.',m3t:'Модераторға жазу',m4t:'Колледж туралы',clear:'Барлық ұсыныстарды өшіру',confirm:'Барлық ұсыныстарды өшіру керек пе? Мұны қайтаруға болмайды.',del:'Өшіру'}
+};
+let lang = localStorage.getItem('wishbox_lang') === 'kz' ? 'kz' : 'ru';
+function t(k){ return I18N[lang][k]; }
+function applyLang(){
+  document.documentElement.lang = lang === 'kz' ? 'kk' : 'ru';
+  document.title = t('ptitle');
+  document.querySelectorAll('[data-i]').forEach(el => {
+    const v = t(el.dataset.i);
+    if(el.hasAttribute('data-h')) el.innerHTML = v.replace('&','&amp;'); else el.textContent = v;
+  });
+  document.querySelectorAll('[data-ip]').forEach(el => el.placeholder = t(el.dataset.ip));
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  renderFeed(lastDocs);
+}
+document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => {
+  lang = b.dataset.lang; localStorage.setItem('wishbox_lang', lang); applyLang();
+}));
+
+// ---- feed ----
+function renderFeed(docs){
+  lastDocs = docs;
+  const feed = $('feed');
+  if(!docs.length){ feed.innerHTML = '<div class="empty">' + t('empty') + '</div>'; return; }
+  feed.innerHTML = docs.map(w => `
+    <div class="wish-card">
+      ${isMod ? `<button class="del" data-id="${esc(w.id)}" title="${t('del')}">✕</button>` : ''}
+      <p class="txt">«${esc(w.text)}»</p>
+      <div class="meta">${esc(w.name)} ${esc(w.surname)}</div>
+    </div>`).join('');
+}
+async function loadFeed(){
+  const { data, error } = await sb.from('suggestions').select('id,name,surname,text,created_at').order('created_at',{ascending:false}).limit(200);
+  renderFeed([...(demo ? demoDocs : []), ...((!error && data) ? data : [])]);
+}
+$('feed').addEventListener('click', async e => {
+  const b = e.target.closest('.del');
+  if(!b || !isMod) return;
+  await sb.from('suggestions').delete().eq('id', b.dataset.id);
+  loadFeed();
+});
+$('clearAll').addEventListener('click', async () => {
+  if(!isMod || !lastDocs.length || !confirm(t('confirm'))) return;
+  await sb.from('suggestions').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  loadFeed();
+});
+
+// ---- daily limit (enforced by the database; this only shows the state) ----
+function refreshComposeState(){
+  $('composeForm').style.display = usedToday ? 'none' : 'flex';
+  $('hintMsg').style.display = usedToday ? 'none' : 'block';
+  $('limitMsg').style.display = usedToday ? 'block' : 'none';
+}
+async function checkUsedToday(){
+  const { data } = await sb.from('suggestions').select('id').eq('user_id', me.id).eq('day', almatyToday()).limit(1);
+  usedToday = !!(data && data.length);
+  refreshComposeState();
+}
+
+// ---- auth (email code) ----
+function showGate(step){
+  $('gate').style.display = 'flex';
+  $('step1').style.display = step === 2 ? 'none' : 'block';
+  $('step2').style.display = step === 2 ? 'block' : 'none';
+  $('gateErr').textContent = '';
+}
+async function enterApp(session){
+  me = session.user; demo = false; $('demoBanner').style.display = 'none';
+  const md = me.user_metadata || {};
+  let p = null;
+  try{ p = JSON.parse(localStorage.getItem('wb_profile') || 'null'); }catch(e){}
+  profile = { first: md.first || (p && p.first) || '', last: md.last || (p && p.last) || '' };
+  if(!profile.first || !profile.last){ await sb.auth.signOut(); me = null; showGate(1); return; }
+  isMod = (me.email || '').toLowerCase() === MODERATOR_EMAIL.toLowerCase();
+  $('clearAll').style.display = isMod ? 'block' : 'none';
+  $('whoName').textContent = profile.first + ' ' + profile.last;
+  $('gate').style.display = 'none';
+  await loadFeed();
+  await checkUsedToday();
+  clearInterval(pollId); pollId = setInterval(loadFeed, 20000);
+}
+$('loginBtn').addEventListener('click', async () => {
+  const first = $('inFirst').value.trim(), last = $('inLast').value.trim(), email = $('inEmail').value.trim().toLowerCase();
+  const err = $('gateErr');
+  if(!first || !last || !/^\S+@\S+\.\S+$/.test(email)){ err.textContent = t('err'); return; }
+  localStorage.setItem('wb_profile', JSON.stringify({first, last}));
+  $('loginBtn').disabled = true; err.textContent = '';
+  const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true, emailRedirectTo: window.location.origin + window.location.pathname, data:{ first, last } } });
+  $('loginBtn').disabled = false;
+  if(error){ err.textContent = t('errSend'); return; }
+  $('sentTo').textContent = email;
+  showGate(2);
+});
+// TEST-SKIP: удалить для запуска
+$('skipBtn').addEventListener('click', () => {
+  const first = $('inFirst').value.trim() || 'Гость', last = $('inLast').value.trim() || 'Тестовый';
+  demo = true; me = { id:'demo' }; profile = { first, last }; usedToday = false; isMod = false;
+  $('whoName').textContent = first + ' ' + last;
+  $('demoBanner').style.display = 'block';
+  $('gate').style.display = 'none';
+  refreshComposeState(); loadFeed();
+});
+// /TEST-SKIP
+$('backBtn').addEventListener('click', () => showGate(1));
+$('logoutBtn').addEventListener('click', async () => {
+  clearInterval(pollId);
+  await sb.auth.signOut();
+  me = null; isMod = false; usedToday = false; demo = false; demoDocs = []; $('demoBanner').style.display = 'none';
+  showGate(1);
+});
+
+// ---- submit + flight animation ----
+$('composeForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const ta = $('wishText'), text = ta.value.trim();
+  if(!text || !me || usedToday) return;
+  const btn = $('dropBtn'); btn.disabled = true; $('subErr').textContent = '';
+
+  const rect = ta.getBoundingClientRect();
+  const scene = document.querySelector('.scene').getBoundingClientRect();
+  const note = document.createElement('div');
+  note.className = 'flying'; note.textContent = text;
+  note.style.left = rect.left + 'px'; note.style.top = rect.top + 'px'; note.style.width = rect.width + 'px';
+  document.body.appendChild(note);
+  requestAnimationFrame(() => {
+    const dx = (scene.left + scene.width/2) - (rect.left + rect.width/2);
+    const dy = (scene.top + scene.height*0.55) - rect.top;
+    note.style.transform = `translate(${dx}px, ${dy}px) scale(.25) rotate(8deg)`;
+    note.style.opacity = '0';
+  });
+  setTimeout(() => note.remove(), 850);
+  ta.value = '';
+
+  if(demo){ demoDocs.unshift({ id:'d'+Date.now(), name:profile.first, surname:profile.last, text }); btn.disabled = false; loadFeed(); return; } // TEST-SKIP
+
+  const { error } = await sb.from('suggestions').insert({ name: profile.first, surname: profile.last, text });
+  btn.disabled = false;
+  if(error){
+    if(error.code === '23505'){ usedToday = true; refreshComposeState(); }
+    else { ta.value = text; $('subErr').textContent = t('errSave'); }
+    return;
+  }
+  usedToday = true; refreshComposeState(); loadFeed();
+});
+
+// ---- side menu ----
+function toggleMenu(open){
+  $('sideMenu').classList.toggle('open', open);
+  $('backdrop').classList.toggle('open', open);
+}
+$('menuBtn').addEventListener('click', () => toggleMenu(true));
+$('menuClose').addEventListener('click', () => toggleMenu(false));
+$('backdrop').addEventListener('click', () => toggleMenu(false));
+
+applyLang();
+sb.auth.onAuthStateChange((ev, session) => { if(ev === 'SIGNED_IN' && session && !demo && !me) enterApp(session); });
+(async () => {
+  showGate(1);
+  const { data } = await sb.auth.getSession();
+  if(data.session && !me) enterApp(data.session);
+  loadFeed();
+})();
+</script>
+</body>
+</html>
